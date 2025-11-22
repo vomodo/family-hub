@@ -8,6 +8,13 @@
       "when": 1763816268280,
       "tag": "0000_slim_purple_man",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1763817744951,
+      "tag": "0001_skinny_radioactive_man",
+      "breakpoints": true
     }
   ]
 }

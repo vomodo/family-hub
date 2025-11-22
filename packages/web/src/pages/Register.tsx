@@ -4,7 +4,7 @@ import axios from 'axios';
 import Turnstile from 'react-turnstile';
 
 const API_URL = 'https://family-hub-api.vomodo.workers.dev';
-const TURNSTILE_SITE_KEY = '0x4AAAAAAAzM3ZWLMm93xGkv'; // Replace with your site key
+const TURNSTILE_SITE_KEY = '0x4AAAAAACCWpZu7SNq9LpCK'; // Replace with your site key
 
 export default function Register() {
   const [step, setStep] = useState<'form' | 'otp'>('form');
