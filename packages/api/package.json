@@ -1,0 +1,29 @@
+{
+  "name": "@family-hub/api",
+  "version": "0.1.0",
+  "private": true,
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "wrangler d1 execute family-hub-db --local --file=./drizzle/migrations/0000_init.sql",
+    "db:studio": "drizzle-kit studio",
+    "lint": "eslint src/"
+  },
+  "dependencies": {
+    "hono": "^4.5.0",
+    "drizzle-orm": "^0.33.0",
+    "@hono/zod-validator": "^0.2.2",
+    "zod": "^3.23.0",
+    "bcryptjs": "^2.4.3",
+    "jose": "^5.6.0",
+    "@family-hub/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240729.0",
+    "wrangler": "^3.67.0",
+    "drizzle-kit": "^0.24.0",
+    "typescript": "^5.5.0"
+  }
+}
