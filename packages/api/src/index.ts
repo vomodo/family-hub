@@ -3,18 +3,17 @@ import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import type { Env } from './types';
 
-// Routes (to be created)
-// import authRoutes from './routes/auth';
-// import familyRoutes from './routes/families';
-// import expenseRoutes from './routes/expenses';
+// Routes
+import authRoutes from './routes/auth';
 
 const app = new Hono<{ Bindings: Env }>();
 
 // Middleware
 app.use('*', cors({
-  origin: '*', // TODO: Restrict in production
+  origin: ['http://localhost:5173', 'https://family-hub-web.pages.dev'],
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
 }));
 
 app.use('*', logger());
@@ -30,9 +29,7 @@ app.get('/', (c) => {
 });
 
 // Routes
-// app.route('/api/auth', authRoutes);
-// app.route('/api/families', familyRoutes);
-// app.route('/api/expenses', expenseRoutes);
+app.route('/api/auth', authRoutes);
 
 // 404 handler
 app.notFound((c) => {
