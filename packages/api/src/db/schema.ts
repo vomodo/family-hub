@@ -6,6 +6,16 @@ export const users = sqliteTable('users', {
   email: text('email').notNull().unique(),
   passwordHash: text('password_hash').notNull(),
   fullName: text('full_name'),
+  emailVerified: integer('email_verified', { mode: 'boolean' }).default(false),
+  createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
+});
+
+export const otpCodes = sqliteTable('otp_codes', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  email: text('email').notNull(),
+  code: text('code').notNull(),
+  expiresAt: text('expires_at').notNull(),
+  used: integer('used', { mode: 'boolean' }).default(false),
   createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
 });
 
@@ -38,7 +48,7 @@ export const expenses = sqliteTable('expenses', {
   imageUrl: text('image_url'),
   category: text('category'),
   
-  metadata: text('metadata'), // JSON field for future OCR data
+  metadata: text('metadata'),
   
   createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`),
 });
