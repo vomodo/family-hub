@@ -1,58 +1,92 @@
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import BottomNav from './components/mobile/BottomNav';
 import InstallPrompt from './components/InstallPrompt';
 
+// Pages
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Dashboard from './pages/Dashboard';
+
 const queryClient = new QueryClient();
+
+// Protected Route wrapper
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const token = localStorage.getItem('token');
+  
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+  
+  return <>{children}</>;
+}
+
+// Public Route wrapper (redirect to dashboard if logged in)
+function PublicRoute({ children }: { children: React.ReactNode }) {
+  const token = localStorage.getItem('token');
+  
+  if (token) {
+    return <Navigate to="/" replace />;
+  }
+  
+  return <>{children}</>;
+}
 
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <div className="min-h-screen bg-gray-50">
-          {/* Header */}
-          <header className="bg-white border-b border-gray-200 px-4 py-3">
-            <h1 className="text-xl font-bold text-gray-900">🏠 FamilyHub</h1>
-          </header>
+        <Routes>
+          {/* Public routes */}
+          <Route
+            path="/login"
+            element={
+              <PublicRoute>
+                <Login />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <PublicRoute>
+                <Register />
+              </PublicRoute>
+            }
+          />
 
-          {/* Main content */}
-          <main className="pb-20 md:pb-0">
-            <div className="max-w-7xl mx-auto px-4 py-6">
-              <div className="bg-white rounded-lg shadow p-6">
-                <h2 className="text-2xl font-bold mb-4">Chào mừng đến FamilyHub! 👋</h2>
-                <p className="text-gray-600 mb-4">
-                  Ứng dụng quản lý chi tiêu và công việc gia đình của bạn.
-                </p>
-                <div className="space-y-2">
-                  <p className="flex items-center gap-2">
-                    <span className="text-2xl">✅</span>
-                    <span>React + Vite</span>
-                  </p>
-                  <p className="flex items-center gap-2">
-                    <span className="text-2xl">✅</span>
-                    <span>Tailwind CSS</span>
-                  </p>
-                  <p className="flex items-center gap-2">
-                    <span className="text-2xl">✅</span>
-                    <span>PWA Support</span>
-                  </p>
-                  <p className="flex items-center gap-2">
-                    <span className="text-2xl">✅</span>
-                    <span>Mobile-First Design</span>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </main>
+          {/* Protected routes */}
+          <Route
+            path="/*"
+            element={
+              <ProtectedRoute>
+                <MainLayout />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
 
-          {/* Bottom Navigation (mobile only) */}
-          <BottomNav />
-
-          {/* Install Prompt */}
-          <InstallPrompt />
-        </div>
+        {/* Install Prompt */}
+        <InstallPrompt />
       </BrowserRouter>
     </QueryClientProvider>
+  );
+}
+
+// Main layout with bottom navigation
+function MainLayout() {
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <Routes>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/expenses" element={<div className="p-4">Chi tiêu (Coming soon)</div>} />
+        <Route path="/calendar" element={<div className="p-4">Lịch (Coming soon)</div>} />
+        <Route path="/profile" element={<div className="p-4">Cá nhân (Coming soon)</div>} />
+      </Routes>
+
+      {/* Bottom Navigation (mobile only) */}
+      <BottomNav />
+    </div>
   );
 }
 
