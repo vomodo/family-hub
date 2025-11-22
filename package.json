@@ -1,0 +1,29 @@
+{
+  "name": "family-hub",
+  "version": "0.1.0",
+  "private": true,
+  "description": "🏠 FamilyHub - Ứng dụng quản lý chi tiêu và công việc gia đình",
+  "scripts": {
+    "dev": "turbo dev",
+    "dev:web": "pnpm --filter=@family-hub/web dev",
+    "dev:api": "pnpm --filter=@family-hub/api dev",
+    "build": "turbo build",
+    "build:changed": "turbo build --filter=...HEAD",
+    "test": "turbo test",
+    "lint": "turbo lint",
+    "lint:fix": "turbo lint -- --fix",
+    "deploy:api": "pnpm --filter=@family-hub/api deploy",
+    "deploy:web": "pnpm --filter=@family-hub/web deploy",
+    "clean": "turbo clean && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0",
+    "typescript": "^5.5.0",
+    "@types/node": "^20.14.0"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@9.7.0"
+}
