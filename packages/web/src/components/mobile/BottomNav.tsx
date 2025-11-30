@@ -1,4 +1,4 @@
-import { Home, Receipt, Calendar, User } from 'lucide-react';
+import { Home, Users, Receipt, Calendar, User } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
 export default function BottomNav() {
@@ -6,8 +6,8 @@ export default function BottomNav() {
   
   const navItems = [
     { icon: Home, label: 'Trang chủ', path: '/' },
+    { icon: Users, label: 'Gia đình', path: '/families' },
     { icon: Receipt, label: 'Chi tiêu', path: '/expenses' },
-    { icon: Calendar, label: 'Lịch', path: '/calendar' },
     { icon: User, label: 'Cá nhân', path: '/profile' },
   ];
 
@@ -18,6 +18,7 @@ export default function BottomNav() {
       pb-safe
       md:hidden
       z-50
+      shadow-lg
     ">
       <div className="grid grid-cols-4 h-16">
         {navItems.map(({ icon: Icon, label, path }) => {
@@ -32,12 +33,12 @@ export default function BottomNav() {
                 transition-colors
                 ${
                   isActive
-                    ? 'text-primary-500'
+                    ? 'text-blue-600 bg-blue-50'
                     : 'text-gray-500 active:text-gray-700'
                 }
               `}
             >
-              <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
+              <Icon size={22} strokeWidth={isActive ? 2.5 : 2} />
               <span className="text-xs font-medium">{label}</span>
             </Link>
           );
