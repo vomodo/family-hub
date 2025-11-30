@@ -2,27 +2,57 @@
 
 > Ứng dụng quản lý chi tiêu và công việc gia đình - Mobile-first PWA on Cloudflare
 
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/vomodo/family-hub)
+[![Deploy to Cloudflare](https://github.com/vomodo/family-hub/actions/workflows/deploy.yml/badge.svg)](https://github.com/vomodo/family-hub/actions/workflows/deploy.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen)](https://nodejs.org/)
+[![pnpm](https://img.shields.io/badge/pnpm-%3E%3D9.0.0-orange)](https://pnpm.io/)
 
 ## ✨ Tính năng
 
-### MVP (Phase 1)
-- ✅ Xác thực người dùng (đăng ký, đăng nhập, quên mật khẩu)
-- ✅ Quản lý gia đình (tạo, mời thành viên)
-- ✅ Theo dõi chi tiêu (thêm, xem, lọc)
-- ✅ Upload ảnh hóa đơn
-- ✅ Quy đổi tiền tệ tự động
-- ✅ Dashboard tổng quan
-- ✅ PWA - Cài đặt trên điện thoại
-- ✅ Mobile-first responsive design
+### ✅ MVP (Phase 1) - Hoàn thành 100%
 
-### Coming Soon (Phase 2)
-- ⏳ To-do list gia đình
-- ⏳ Buy list (danh sách mua sắm)
-- ⏳ Lịch gia đình
-- ⏳ AI OCR tự động (Cloudflare Workers AI)
-- ⏳ Thông báo email
-- ⏳ Xuất báo cáo
+- **Xác thực người dùng**
+  - Đăng ký với OTP verification
+  - Đăng nhập JWT-based
+  - Anti-bot protection (Cloudflare Turnstile)
+  - Email verification qua N8N webhook
+
+- **Quản lý gia đình**
+  - Tạo gia đình mới
+  - Mời thành viên qua email
+  - Xem danh sách thành viên
+  - Phân quyền Admin/Member
+
+- **Theo dõi chi tiêu**
+  - Thêm/sửa/xóa chi tiêu
+  - Upload ảnh hóa đơn (R2 storage)
+  - Lọc theo ngày/tháng/category
+  - Multi-currency support (VND, USD, EUR, JPY, THB, etc.)
+
+- **Quy đổi tiền tệ**
+  - Tự động quy đổi sang VND
+  - Real-time exchange rates
+  - Fallback rates nếu API down
+
+- **Dashboard tổng quan**
+  - Tổng chi tiêu theo family
+  - Thống kê theo category
+  - Biểu đồ phân tích
+  - Real-time analytics
+
+- **PWA - Progressive Web App**
+  - Cài đặt lên màn hình chính
+  - Offline support
+  - Mobile-first responsive design
+
+### ⏳ Coming Soon (Phase 2)
+
+- To-do list gia đình
+- Buy list (danh sách mua sắm)
+- Lịch gia đình
+- AI OCR tự động (Cloudflare Workers AI)
+- Thông báo email
+- Xuất báo cáo
 
 ## 🛠️ Tech Stack
 
@@ -44,6 +74,7 @@
 ### Infrastructure
 - **Cloudflare Pages** - Frontend hosting
 - **Cloudflare Workers** - Backend API
+- **GitHub Actions** - CI/CD automation
 - **100% Free Tier** - Phù hợp sử dụng nội bộ
 
 ## 🚀 Quick Start
@@ -77,7 +108,12 @@ pnpm --filter=@family-hub/api wrangler r2 bucket create family-hub-receipts
 
 # 6. Run migrations
 pnpm --filter=@family-hub/api db:generate
-pnpm --filter=@family-hub/api db:migrate
+pnpm --filter=@family-hub/api wrangler d1 execute family-hub-db --remote --file=./drizzle/migrations/0000_init.sql
+
+# 7. Setup secrets
+pnpm --filter=@family-hub/api wrangler secret put JWT_SECRET
+pnpm --filter=@family-hub/api wrangler secret put TURNSTILE_SECRET_KEY
+pnpm --filter=@family-hub/api wrangler secret put N8N_WEBHOOK_URL
 ```
 
 ### Development
@@ -104,44 +140,36 @@ pnpm deploy:api
 pnpm deploy:web
 ```
 
-## 📁 Project Structure
+## 🔄 Auto-Deploy với GitHub Actions
 
+### Setup Secrets
+
+1. Vào **Settings** > **Secrets and variables** > **Actions**
+2. Thêm các secrets sau:
+
+| Secret | Mô tả |
+|--------|-------|
+| `CLOUDFLARE_API_TOKEN` | API token từ Cloudflare |
+| `CLOUDFLARE_ACCOUNT_ID` | Account ID từ Cloudflare |
+| `VITE_API_URL` | URL của API (optional) |
+
+### Auto-Deploy
+
+Mỗi khi push lên `main` branch, GitHub Actions tự động:
+
+1. ⚡ Phát hiện files thay đổi (API hoặc Web)
+2. 🛠️ Build packages
+3. 🚀 Deploy lên Cloudflare
+4. ✅ Thông báo kết quả
+
+```bash
+# Push code -> auto deploy!
+git add .
+git commit -m "feat: new feature"
+git push origin main
 ```
-family-hub/
-├── packages/
-│   ├── web/              # Frontend React app
-│   │   ├── src/
-│   │   │   ├── components/   # React components
-│   │   │   ├── pages/        # Page components
-│   │   │   ├── lib/          # Utilities
-│   │   │   ├── App.tsx
-│   │   │   └── main.tsx
-│   │   ├── public/
-│   │   │   └── icons/        # PWA icons
-│   │   ├── vite.config.ts
-│   │   └── package.json
-│   │
-│   ├── api/              # Backend Hono API
-│   │   ├── src/
-│   │   │   ├── routes/       # API routes
-│   │   │   ├── db/           # Database schema
-│   │   │   ├── middleware/   # Auth, CORS
-│   │   │   ├── lib/          # Utilities
-│   │   │   └── index.ts
-│   │   ├── wrangler.toml
-│   │   └── package.json
-│   │
-│   └── shared/           # Shared types & constants
-│       ├── src/
-│       │   ├── types/
-│       │   └── constants.ts
-│       └── package.json
-│
-├── pnpm-workspace.yaml
-├── turbo.json
-├── package.json
-└── README.md
-```
+
+📚 **Chi tiết**: Xem [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) và [docs/GITHUB_ACTIONS.md](docs/GITHUB_ACTIONS.md)
 
 ## 📱 Mobile-First Features
 
@@ -166,7 +194,65 @@ family-hub/
 - Pull-to-refresh on lists
 - Native input types (date, number, tel)
 
-## 🔧 Development Scripts
+## 📁 Project Structure
+
+```
+family-hub/
+├── packages/
+│   ├── web/              # Frontend React app
+│   │   ├── src/
+│   │   │   ├── components/   # React components
+│   │   │   ├── pages/        # Page components
+│   │   │   │   ├── Dashboard.tsx
+│   │   │   │   ├── FamilyManagement.tsx
+│   │   │   │   ├── Expenses.tsx
+│   │   │   │   ├── Login.tsx
+│   │   │   │   └── Register.tsx
+│   │   │   ├── lib/          # Utilities
+│   │   │   ├── App.tsx
+│   │   │   └── main.tsx
+│   │   ├── public/
+│   │   │   └── icons/        # PWA icons
+│   │   ├── vite.config.ts
+│   │   └── package.json
+│   │
+│   ├── api/              # Backend Hono API
+│   │   ├── src/
+│   │   │   ├── routes/       # API routes
+│   │   │   │   ├── auth.ts
+│   │   │   │   ├── families.ts
+│   │   │   │   └── expenses.ts
+│   │   │   ├── db/           # Database schema
+│   │   │   │   └── schema.ts
+│   │   │   ├── middleware/   # Auth, CORS
+│   │   │   ├── lib/          # Utilities
+│   │   │   │   ├── email.ts
+│   │   │   │   └── currency.ts
+│   │   │   └── index.ts
+│   │   ├── wrangler.toml
+│   │   └── package.json
+│   │
+│   └── shared/           # Shared types & constants
+│       ├── src/
+│       │   ├── types/
+│       │   └── constants.ts
+│       └── package.json
+│
+├── docs/
+│   ├── DEPLOYMENT.md      # Hướng dẫn deploy
+│   └── GITHUB_ACTIONS.md  # CI/CD setup
+│
+├── .github/
+│   └── workflows/
+│       └── deploy.yml     # Auto-deploy workflow
+│
+├── pnpm-workspace.yaml
+├── turbo.json
+├── package.json
+└── README.md
+```
+
+## 🛠️ Development Scripts
 
 ```bash
 # Development
@@ -203,39 +289,57 @@ pnpm clean               # Remove node_modules & build files
 ```bash
 JWT_SECRET=your-secret-key-change-in-production
 ENVIRONMENT=development
+TURNSTILE_SECRET_KEY=your-turnstile-secret
+N8N_WEBHOOK_URL=https://your-n8n-instance.com/webhook/...
+EXCHANGE_RATE_API_KEY=your-exchange-rate-api-key
+```
+
+### Frontend (packages/web/.env)
+
+```bash
+VITE_API_URL=http://localhost:8787
 ```
 
 ### Production Secrets
 
 ```bash
 # Set via Wrangler CLI
-wrangler secret put JWT_SECRET
-wrangler secret put SMTP_PASSWORD
-wrangler secret put EXCHANGE_RATE_API_KEY
+cd packages/api
+pnpm wrangler secret put JWT_SECRET
+pnpm wrangler secret put TURNSTILE_SECRET_KEY
+pnpm wrangler secret put N8N_WEBHOOK_URL
+pnpm wrangler secret put EXCHANGE_RATE_API_KEY
 ```
 
 ## 📊 Cloudflare Free Tier Limits
 
-| Service | Free Tier | MVP Usage |
-|---------|-----------|----------|
-| Workers | 100,000 req/day | ~3,000 req/day |
-| D1 | 5M reads/day | ~10,000 reads/day |
-| R2 | 10GB storage | ~2GB (images) |
-| Pages | Unlimited | Unlimited |
+| Service | Free Tier | MVP Usage | Status |
+|---------|-----------|----------|--------|
+| Workers | 100,000 req/day | ~3,000 req/day | ✅ |
+| D1 | 5M reads/day | ~10,000 reads/day | ✅ |
+| R2 | 10GB storage | ~2GB (images) | ✅ |
+| Pages | Unlimited | Unlimited | ✅ |
 
 **Kết luận**: Hoàn toàn đủ cho 10-20 người dùng nội bộ 👍
 
 ## 🤝 Contributing
 
-Những phần cần phát triển:
+### Phát triển thiếu
 
-- [ ] Authentication routes (login, register, forgot password)
-- [ ] Family management API
-- [ ] Expense tracking with image upload
-- [ ] Currency conversion API integration
-- [ ] To-do list feature
-- [ ] Calendar integration
-- [ ] Email notifications
+- [ ] To-do list feature (Phase 2)
+- [ ] Calendar integration (Phase 2)
+- [ ] AI OCR auto-extract (Phase 2)
+- [ ] Email notifications system
+- [ ] Export reports (PDF/Excel)
+- [ ] Mobile apps (React Native)
+
+### Workflow
+
+1. Fork repository
+2. Tạo branch: `git checkout -b feature/amazing-feature`
+3. Commit changes: `git commit -m 'feat: add amazing feature'`
+4. Push: `git push origin feature/amazing-feature`
+5. Tạo Pull Request
 
 ## 📝 License
 
@@ -243,13 +347,46 @@ MIT License - See [LICENSE](LICENSE) for details
 
 ## 👨‍💻 Author
 
-**Vu Minh Duc**
+**Vũ Minh Đức**
 - GitHub: [@vomodo](https://github.com/vomodo)
 - Website: [ducvu.vn](https://ducvu.vn)
 - Email: duc@ducvu.vn
 
+## 🚀 Roadmap
+
+### Phase 1 (MVP) - ✅ Hoàn thành
+- [x] Authentication với OTP
+- [x] Family Management
+- [x] Expense Tracking
+- [x] Currency Conversion
+- [x] Dashboard Analytics
+- [x] PWA Support
+- [x] CI/CD Auto-deploy
+
+### Phase 2 (Q1 2026)
+- [ ] To-do List gia đình
+- [ ] Shopping List
+- [ ] Calendar Integration
+- [ ] AI OCR cho hóa đơn
+- [ ] Email Notifications
+- [ ] Export Reports
+
+### Phase 3 (Q2 2026)
+- [ ] Mobile Apps (iOS/Android)
+- [ ] Budget Planning
+- [ ] Recurring Expenses
+- [ ] Multi-language Support
+- [ ] Dark Mode
+
+## ⭐ Star History
+
+Nếu project hữu ích, hãy cho một star ⭐
+
 ---
 
 <p align="center">
-  Made with ❤️ for Vietnamese families
+  Made with ❤️ for Vietnamese families<br/>
+  <a href="https://family-hub.pages.dev">Live Demo</a> • 
+  <a href="docs/DEPLOYMENT.md">Deployment Guide</a> • 
+  <a href="docs/GITHUB_ACTIONS.md">CI/CD Guide</a>
 </p>
