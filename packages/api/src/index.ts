@@ -5,6 +5,8 @@ import type { Env } from './types';
 
 // Routes
 import authRoutes from './routes/auth';
+import familiesRoutes from './routes/families';
+import expensesRoutes from './routes/expenses';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -22,14 +24,17 @@ app.use('*', logger());
 app.get('/', (c) => {
   return c.json({
     status: 'ok',
-    version: '0.1.0',
-    message: '🏠 FamilyHub API',
+    version: '0.2.0',
+    message: '🏠 FamilyHub API - MVP Complete',
     timestamp: new Date().toISOString(),
+    features: ['auth', 'families', 'expenses', 'currency-conversion', 'image-upload'],
   });
 });
 
 // Routes
 app.route('/api/auth', authRoutes);
+app.route('/api/families', familiesRoutes);
+app.route('/api/expenses', expensesRoutes);
 
 // 404 handler
 app.notFound((c) => {
