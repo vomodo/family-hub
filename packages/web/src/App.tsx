@@ -7,6 +7,8 @@ import InstallPrompt from './components/InstallPrompt';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import FamilyManagement from './pages/FamilyManagement';
+import Expenses from './pages/Expenses';
 
 const queryClient = new QueryClient();
 
@@ -79,9 +81,10 @@ function MainLayout() {
     <div className="min-h-screen bg-gray-50">
       <Routes>
         <Route path="/" element={<Dashboard />} />
-        <Route path="/expenses" element={<div className="p-4">Chi tiêu (Coming soon)</div>} />
-        <Route path="/calendar" element={<div className="p-4">Lịch (Coming soon)</div>} />
-        <Route path="/profile" element={<div className="p-4">Cá nhân (Coming soon)</div>} />
+        <Route path="/families" element={<FamilyManagement />} />
+        <Route path="/expenses" element={<Expenses />} />
+        <Route path="/calendar" element={<div className="p-4 text-center mt-20"><h2 className="text-2xl font-bold text-gray-500">Lịch gia đình<br/>(Coming soon in Phase 2)</h2></div>} />
+        <Route path="/profile" element={<div className="p-4 text-center mt-20"><h2 className="text-2xl font-bold text-gray-500">Cá nhân<br/>(Coming soon)</h2></div>} />
       </Routes>
 
       {/* Bottom Navigation (mobile only) */}
